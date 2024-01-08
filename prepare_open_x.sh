@@ -13,8 +13,9 @@ Adjust workers to fit the available memory of your machine, the more workers + e
 The default values are tested with a server with ~120GB of RAM and 24 cores.
 '
 
-DOWNLOAD_DIR=<your_download_dir>
-CONVERSION_DIR=<temporary_dir_for_conversion>
+DOWNLOAD_DIR=/root/datasets/oxe_octo_datasets
+ORIGINAL_DIR=/root/datasets/oxe_original_datasets  # Save original datasets in a separate directory
+CONVERSION_DIR=/root/datasets/tmp_conversion
 N_WORKERS=20                  # number of workers used for parallel conversion --> adjust based on available RAM
 MAX_EPISODES_IN_MEMORY=200    # number of episodes converted in parallel --> adjust based on available RAM
 
@@ -60,6 +61,7 @@ for tuple in "${DATASET_TRANSFORMS[@]}"; do
   mkdir ${DOWNLOAD_DIR}/${DATASET}
   gsutil -m cp -r gs://gresearch/robotics/${DATASET}/${VERSION} ${DOWNLOAD_DIR}/${DATASET}
   python3 modify_rlds_dataset.py --dataset=$DATASET --data_dir=$DOWNLOAD_DIR --target_dir=$CONVERSION_DIR --mods=$TRANSFORM --n_workers=$N_WORKERS --max_episodes_in_memory=$MAX_EPISODES_IN_MEMORY
-  rm -rf ${DOWNLOAD_DIR}/${DATASET}
+  # rm -rf ${DOWNLOAD_DIR}/${DATASET}
+  mv ${DOWNLOAD_DIR}/${DATASET} ${ORIGINAL_DIR}
   mv ${CONVERSION_DIR}/${DATASET} ${DOWNLOAD_DIR}
 done
